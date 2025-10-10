@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86efb6c771d7ea44b899d16ccbc3b820, type: 3}
+  m_Name: ttestt
+  m_EditorClassIdentifier: 
+  nodes:
+  - guid: 9d3a182a-a254-43e6-89df-2430f60b5afa
+    title: 2
+    position: {x: 653, y: -5}
+    lineText: 222
+    choices: []
+  - guid: 4584d78b-313e-4f6c-9750-306fe253644d
+    title: 3
+    position: {x: 667, y: 316}
+    lineText: 333
+    choices: []
+  - guid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
+    title: 1
+    position: {x: -3, y: 173}
+    lineText: 111
+    choices:
+    - text: a
+      conditionExpr: x
+      targetGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa
+    - text: b
+      conditionExpr: y
+      targetGuid: 4584d78b-313e-4f6c-9750-306fe253644d
+  edges:
+  - outputNodeGuid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
+    inputNodeGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa
+    portName: Choice_0
+  - outputNodeGuid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
+    inputNodeGuid: 4584d78b-313e-4f6c-9750-306fe253644d
+    portName: Choice_1
+  startNodeGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa

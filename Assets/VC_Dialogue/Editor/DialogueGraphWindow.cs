@@ -9,13 +9,14 @@ namespace Dialogue.Editor {
     {
         private DialogueGraphView _graphView;
         private DialogueGraph _asset;
+        public DialogueGraph CurrentAsset => _asset;
 
         [MenuItem("Window/Dialogue/Graph Editor")]
         public static void Open()
         {
             var wnd = GetWindow<DialogueGraphWindow>();
             wnd.titleContent = new GUIContent("Dialogue Graph");
-            wnd.minSize = new Vector2(600, 300);
+            wnd.minSize = new Vector2(900, 600);
         }
 
 
