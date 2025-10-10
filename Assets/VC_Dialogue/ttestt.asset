@@ -17,12 +17,31 @@ MonoBehaviour:
     title: 2
     position: {x: 653, y: -5}
     lineText: 222
+    choices:
+    - text: asdasd
+      conditionExpr: zxc
+      targetGuid: 2a6c3435-8837-4cc6-8586-c16efed1317e
+  - guid: 2a6c3435-8837-4cc6-8586-c16efed1317e
+    title: 4
+    position: {x: 1175, y: 19}
+    lineText: end1
+    choices: []
+  - guid: 6d438e83-493a-402c-9e3b-4721d1d6934e
+    title: 5
+    position: {x: 1227, y: 394}
+    lineText: end2
     choices: []
   - guid: 4584d78b-313e-4f6c-9750-306fe253644d
     title: 3
-    position: {x: 667, y: 316}
+    position: {x: 598, y: 394}
     lineText: 333
-    choices: []
+    choices:
+    - text: 
+      conditionExpr: 
+      targetGuid: 2a6c3435-8837-4cc6-8586-c16efed1317e
+    - text: 
+      conditionExpr: 
+      targetGuid: 6d438e83-493a-402c-9e3b-4721d1d6934e
   - guid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
     title: 1
     position: {x: -3, y: 173}
@@ -38,7 +57,16 @@ MonoBehaviour:
   - outputNodeGuid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
     inputNodeGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa
     portName: Choice_0
+  - outputNodeGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa
+    inputNodeGuid: 2a6c3435-8837-4cc6-8586-c16efed1317e
+    portName: Choice_0
   - outputNodeGuid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
     inputNodeGuid: 4584d78b-313e-4f6c-9750-306fe253644d
     portName: Choice_1
-  startNodeGuid: 9d3a182a-a254-43e6-89df-2430f60b5afa
+  - outputNodeGuid: 4584d78b-313e-4f6c-9750-306fe253644d
+    inputNodeGuid: 2a6c3435-8837-4cc6-8586-c16efed1317e
+    portName: Choice_0
+  - outputNodeGuid: 4584d78b-313e-4f6c-9750-306fe253644d
+    inputNodeGuid: 6d438e83-493a-402c-9e3b-4721d1d6934e
+    portName: Choice_1
+  startNodeGuid: 3e9cb597-30db-49d8-90cd-39d0304ecf97
