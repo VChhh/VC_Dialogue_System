@@ -83,6 +83,15 @@ namespace Dialogue.Editor {
             var btnSetStart = new ToolbarButton(() => _graphView.SetSelectedAsStart()) { text = "Set Start" };
             toolbar.Add(btnSetStart);
 
+            var btnRefresh = new ToolbarButton(() =>
+            {
+                // refresh the visuals
+                _graphView.RefreshStartVisuals();
+                _graphView.RefreshEndVisuals();
+            })
+            { text = "Refresh" };
+            toolbar.Add(btnRefresh);
+
 
             rootVisualElement.Add(toolbar);
         }

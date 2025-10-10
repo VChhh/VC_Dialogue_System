@@ -28,6 +28,8 @@ public Dialogue.DialogueRunner runner;
     void HandleLine(string text)
     {
         lineText.text = text ?? "";
+        foreach (var b in _spawned) Destroy(b.gameObject);
+        _spawned.Clear();
     }
 
     void HandleChoices(List<string> options)
@@ -71,5 +73,14 @@ public Dialogue.DialogueRunner runner;
         lineText.text = "<end>";
         foreach (var b in _spawned) Destroy(b.gameObject);
         _spawned.Clear();
+    }
+
+    void Update()
+    {
+        // if click and no choices, continue
+        if (Input.GetMouseButtonDown(0) && _spawned.Count == 0)
+        {
+            runner.Continue();
+        }
     }
 }

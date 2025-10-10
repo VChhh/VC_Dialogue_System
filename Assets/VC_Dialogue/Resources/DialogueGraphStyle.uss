@@ -74,3 +74,37 @@ MiniMap, .minimap { background-color: rgba(0,0,0,0.45); }
 
 /* Ensure default right-side output column is visible (no override) */
 
+
+/* start node visual style */
+.start-node {
+    border-left-width: 6px;
+    border-left-color: #2ecc71;
+}
+
+/* small pill in the node title bar */
+.start-badge {
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: #2ecc71;
+}
+
+/* end node visual style */
+.end-node {
+    border-left-width: 6px;
+    border-left-color: #e74c3c;
+}
+
+/* small pill in the node title bar */
+.end-badge {
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    -unity-font-style: bold;
+    color: white;
+    background-color: #e74c3c;
+}

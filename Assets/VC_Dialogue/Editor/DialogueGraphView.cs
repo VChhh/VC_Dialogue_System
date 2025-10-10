@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Linq;
 
 
 namespace Dialogue.Editor
@@ -113,7 +114,8 @@ namespace Dialogue.Editor
                     asset.startNodeGuid = kv.Key; break;
                 }
             }
-
+            RefreshStartVisuals();
+            RefreshEndVisuals();
 
             graphViewChanged += OnGraphViewChanged;
         }
@@ -168,6 +170,40 @@ namespace Dialogue.Editor
                     asset.startNodeGuid = view.Guid;
                     EditorUtility.SetDirty(asset);
                     AssetDatabase.SaveAssets();
+                    RefreshStartVisuals();
+                }
+            }
+        }
+
+        public void SetAsStartFromNode(string guid)
+        {
+            if (TryGetAsset(out var asset))
+            {
+                asset.startNodeGuid = guid;
+                EditorUtility.SetDirty(asset);
+                AssetDatabase.SaveAssets();
+                RefreshStartVisuals();
+            }
+        }
+
+        // helper to refresh start node visuals
+        public void RefreshStartVisuals()
+        {
+            if (!TryGetAsset(out var asset) || string.IsNullOrEmpty(asset.startNodeGuid)) return;
+
+            foreach (var element in nodes)
+            {
+                if (element is DialogueNodeView v)
+                {
+                    v.ApplyStartVisual(v.Guid == asset.startNodeGuid);
+                }
+            }
+        }
+
+        public void RefreshEndVisuals() {
+            foreach(var element in nodes) {
+                if (element is DialogueNodeView v) {
+                    v.ApplyEndVisual(IsImplicitEnd(v));
                 }
             }
         }
@@ -187,6 +223,27 @@ namespace Dialogue.Editor
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
         {
             // Could add validation, auto-assign choice targets, etc.
+
+            // validate unique GUIDs
+            var guids = new HashSet<string>();
+            foreach (var element in nodes)
+            {
+                if (element is DialogueNodeView node)
+                {
+                    if (guids.Contains(node.Guid))
+                    {
+                        Debug.LogError($"Duplicate node GUID found: {node.Guid}");
+                    }
+                    else
+                    {
+                        guids.Add(node.Guid);
+                    }
+                }
+            }
+
+            RefreshStartVisuals();
+            RefreshEndVisuals();
+
             return change;
         }
 
@@ -204,6 +261,20 @@ namespace Dialogue.Editor
             node.SetPosition(new Rect(position, new Vector2(260, 180)));
             return node;
         }
+
+        private bool IsImplicitEnd(DialogueNodeView v) {
+            // Any output port with any connection?
+            var anyOutConnected = v.outputContainer
+                .Query<UnityEditor.Experimental.GraphView.Port>()
+                .ToList()
+                .Any(p => p.connections != null && p.connections.Any());
+
+            if (anyOutConnected) return false;
+
+            // Optional: avoid marking isolated nodes as ends
+            var hasIncoming = v.input != null && v.input.connections != null && v.input.connections.Any();
+            return hasIncoming;
+        }
     }
     
 
@@ -212,12 +283,16 @@ namespace Dialogue.Editor
 
         public string Guid { get; private set; }
         public Port input;
-    public Port output;
-    private readonly List<Port> _choicePorts = new();
+        public Port output;
+        public List<Port> _choicePorts = new();
         private TextField _titleField;
         private TextField _lineField;
         private ListView _choicesList;
         private readonly List<ChoiceItem> _choices = new();
+
+
+        private Label _startBadge;
+        private Label _endBadge;
 
 
         [Serializable]
@@ -249,6 +324,25 @@ namespace Dialogue.Editor
 
             AddToClassList("dialogue-node");
             titleContainer.AddToClassList("dialogue-node__title");
+
+            // "START" pill in title bar (hidden by default)
+            _startBadge = new Label("START");
+            _startBadge.AddToClassList("start-badge");
+            _startBadge.style.display = DisplayStyle.None;
+            titleContainer.Add(_startBadge);
+
+            _endBadge = new Label("END");
+            _endBadge.AddToClassList("end-badge");
+            _endBadge.style.display = DisplayStyle.None;
+            titleContainer.Add(_endBadge);
+
+            // Right-click action to set this node as default start
+            this.AddManipulator(new ContextualMenuManipulator(m => {
+                m.menu.AppendAction("Set as Default Start", _ => {
+                    var gv = GetFirstAncestorOfType<DialogueGraphView>();
+                    gv?.SetAsStartFromNode(Guid);
+                });
+            }));
 
 
             // Input (one)
@@ -431,14 +525,18 @@ namespace Dialogue.Editor
         // ...existing code...
 
 
-        public List<DialogueGraph.Choice> GetChoicesData() {
+        public List<DialogueGraph.Choice> GetChoicesData()
+        {
             var list = new List<DialogueGraph.Choice>();
             // Build a map of portName -> connected target node guid (if any)
             var portTargetMap = new Dictionary<string, string>();
             var gv = this.GetFirstAncestorOfType<GraphView>();
-            if (gv != null) {
-                foreach (var edge in gv.edges) {
-                    if (edge.output?.node == this && edge.input?.node is DialogueNodeView targetNode) {
+            if (gv != null)
+            {
+                foreach (var edge in gv.edges)
+                {
+                    if (edge.output?.node == this && edge.input?.node is DialogueNodeView targetNode)
+                    {
                         var pn = edge.output.portName;
                         if (!string.IsNullOrEmpty(pn)) portTargetMap[pn] = targetNode.Guid;
                     }
@@ -454,6 +552,18 @@ namespace Dialogue.Editor
                 list.Add(choice);
             }
             return list;
+        }
+
+        public void ApplyStartVisual(bool isStart)
+        {
+            EnableInClassList("start-node", isStart);
+            if (_startBadge != null) _startBadge.style.display = isStart ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+        
+        public void ApplyEndVisual(bool isEnd) {
+            EnableInClassList("end-node", isEnd);
+            if (_endBadge != null)
+                _endBadge.style.display = isEnd ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }

@@ -63,13 +63,21 @@ namespace Dialogue
 
 
             OnLine?.Invoke(_current.lineText);
+            Debug.Log("invoke line: " + _current.lineText);
 
 
-            // If choices exist, emit them; otherwise we expect UI to call Continue()
-            if (_current.choices != null && _current.choices.Count > 0) {
+            // If choices exist, emit them;
+            if (_current.choices != null && _current.choices.Count > 0)
+            {
                 var texts = new List<string>();
                 foreach (var c in _current.choices) texts.Add(c.text);
                 OnChoices?.Invoke(texts);
+            }
+            else
+            {
+                // if uncommented, there would be a continue button
+                // otherwise, expect the UI to call Continue()
+                // OnChoices?.Invoke(null);
             }
         }
 
